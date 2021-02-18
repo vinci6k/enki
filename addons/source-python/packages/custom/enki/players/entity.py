@@ -28,7 +28,10 @@ class EnkiPlayer(Player):
         rise_think (Repeat): Instance of Repeat() used for looping the
             `_rise_think()` function.
     """
+    # Velocity used for pushing the player above the water surface.
     velocity_rise = Vector(0, 0, 50)
+    # Velocity used to prevent the player from sinking a bit when re-entering
+    # the water while water walking is enabled.
     velocity_bounce = Vector(0, 0, 300)
 
     def __init__(self, index, caching=True):

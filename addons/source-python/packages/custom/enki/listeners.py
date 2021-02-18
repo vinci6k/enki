@@ -3,11 +3,15 @@
 # Source.Python
 from entities.constants import WORLD_ENTITY_INDEX
 from entities.entity import Entity
+from entities.helpers import index_from_pointer
 from entities.hooks import EntityCondition, EntityPreHook
+from events import Event
 from listeners import ListenerManager, ListenerManagerDecorator
 from players.constants import PlayerStates
+from players.helpers import index_from_userid
 
 # Enki
+from .players.dictionary import player_instances
 from .players.entity import EnkiPlayer
 
 
@@ -27,13 +31,40 @@ class OnPlayerExitWater(ListenerManagerDecorator):
     manager = ListenerManager()
 
 
+@Event('player_spawn')
+def player_spawn(event):
+    """Called when a player spawns."""
+    player = EnkiPlayer.from_userid(event['userid'])
+    # Store the EnkiPlayer instance to keep track of live players.
+    player_instances[player.index] = player
+
+
+@Event('player_death')
+def player_death(event):
+    """Called when a player dies."""
+    index = index_from_userid(event['userid'])
+    player = player_instances[index]
+
+    # Did the player die in water?
+    if player.last_water_level > 0:
+        # Stop pushing the player up.
+        player.rise_think.stop()
+        # Fire the OnPlayerExitWater listener manually.
+        OnPlayerExitWater.manager.notify(player=player)
+        # Reset the 'last_water_level' attribute.
+        player.last_water_level = 0
+
+    # Player died, remove the EnkiPlayer instance from the dictionary.
+    del player_instances[index]
+
+
 @EntityPreHook(EntityCondition.is_player, 'post_think')
 def post_think_pre(stack_data):
-    player = EnkiPlayer._obj(stack_data[0])
-
-    # Is the player dead?
-    if player.get_datamap_property_bool('pl.deadflag'):
-        # No need to go further.
+    try:
+        # Try to get an EnkiPlayer instance.
+        player = player_instances[index_from_pointer(stack_data[0])]
+    except KeyError:
+        # Player is not alive, don't go further.
         return
 
     water_level = player.water_level

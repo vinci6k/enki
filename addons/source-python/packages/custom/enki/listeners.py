@@ -1,6 +1,7 @@
 # ../enki/listeners.py
 
 # Source.Python
+from cvars import ConVar
 from entities.constants import WORLD_ENTITY_INDEX
 from entities.entity import Entity
 from entities.helpers import index_from_pointer
@@ -21,6 +22,9 @@ __all__ = (
 )
 
 
+tv_enable = ConVar('tv_enable')
+
+
 class OnPlayerEnterWater(ListenerManagerDecorator):
     """Register/unregister a OnPlayerEnterWater listener."""
     manager = ListenerManager()
@@ -34,7 +38,14 @@ class OnPlayerExitWater(ListenerManagerDecorator):
 @Event('player_spawn')
 def player_spawn(event):
     """Called when a player spawns."""
-    player = EnkiPlayer.from_userid(event['userid'])
+    userid = event['userid']
+
+    # Is this SourceTV/GOTV?
+    if tv_enable.get_int() > 0 and userid == 2:
+        # Skip it.
+        return
+
+    player = EnkiPlayer.from_userid(userid)
     # Store the EnkiPlayer instance to keep track of live players.
     player_instances[player.index] = player
 

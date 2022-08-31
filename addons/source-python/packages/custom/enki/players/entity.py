@@ -1,8 +1,9 @@
 # ../enki/players/entity.py
 
 # Source.Python
-from engines.trace import (ContentMasks, GameTrace, Ray, TraceFilterSimple, 
-    engine_trace)
+from engines.trace import (
+    ContentMasks, GameTrace, Ray, TraceFilterSimple, engine_trace
+)
 from mathlib import Vector
 from players.entity import Player
 
@@ -17,7 +18,7 @@ __all__ = (
 
 class EnkiPlayer(Player):
     """Extended Player class.
-    
+
     Args:
         index (int): A valid player index.
         caching (bool): Check for a cached instance?
@@ -67,10 +68,10 @@ class EnkiPlayer(Player):
 
         self.walk_on_water = False
         self.rise_think.stop()
-    
+
     def _rise_think(self):
         water_level = self.water_level
-        
+
         # Is the player no longer touching the water?
         if water_level == WaterLevel.NOT_IN_WATER:
             self.rise_think.stop()
@@ -104,4 +105,3 @@ class EnkiPlayer(Player):
             )
 
         return trace
-        

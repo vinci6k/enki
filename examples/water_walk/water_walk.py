@@ -1,5 +1,8 @@
 # ../water_walk/water_walk.py
 
+# NOTE: This example was made for Counter-Strike: Global Offensive, as it
+# uses the weapon inspect command to trigger the water walking mechanic.
+
 # Source.Python
 from commands import CommandReturn
 from commands.client import ClientCommand

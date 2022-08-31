@@ -16,6 +16,8 @@ def on_player_enter_water(player):
         # Let's make a big water splash!
         particle = Entity.create('info_particle_system')
         particle.origin = player.origin
+        # NOTE: This particle effect only exists in CS:GO, there are similar
+        # effects in other games, e.g. 'water_splash_01' in CS:S.
         particle.effect_name = 'explosion_basic_water'
         particle.effect_index = string_tables.ParticleEffectNames.add_string(
             'explosion_basic_water'
